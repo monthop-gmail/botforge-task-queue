@@ -51,36 +51,6 @@ status = task_queue.get_status(job_id)
 result = task_queue.get_result(job_id)
 ```
 
-## Usage with LINE Bot
-
-```python
-from plugin import TaskQueuePlugin
-
-task_queue = TaskQueuePlugin(bot=line_bot_api)
-
-@task_queue.register("long_process")
-def long_process(user_id, params, worker):
-    result = do_something_heavy(params["message"])
-    return result
-
-@handler.add(MessageEvent, message=TextMessage)
-def handle_message(event):
-    user_id = event.source.user_id
-
-    # ส่งงานเข้า queue
-    job_id = task_queue.submit(
-        user_id=user_id,
-        task_type="long_process",
-        params={"message": event.message.text}
-    )
-
-    # ตอบกลับทันที (ไม่ timeout)
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=f"รับงานแล้ว Job: {job_id}")
-    )
-```
-
 ## Progress Updates
 
 ```python
