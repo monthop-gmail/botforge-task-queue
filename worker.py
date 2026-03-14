@@ -75,6 +75,9 @@ class TaskWorker:
             if not handler:
                 raise Exception(f"Unknown task type: {task_type}")
             
+            # Inject job_id into params for progress updates
+            params["_job_id"] = job_id
+
             # Execute handler
             result = handler(user_id, params, self)
             

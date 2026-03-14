@@ -66,6 +66,11 @@ class SQLiteStorage(JobStorage):
         cursor.execute("SELECT job_id FROM jobs WHERE job_id = ?", (job_id,))
         exists = cursor.fetchone() is not None
         
+        # Serialize result to JSON string for SQLite TEXT column
+        result_value = data.get("result")
+        if result_value is not None and not isinstance(result_value, str):
+            result_value = json.dumps(result_value, ensure_ascii=False)
+
         if exists:
             cursor.execute("""
                 UPDATE jobs SET
@@ -79,7 +84,7 @@ class SQLiteStorage(JobStorage):
                 data.get("status"),
                 data.get("progress", 0),
                 data.get("message"),
-                data.get("result"),
+                result_value,
                 time.time(),
                 data.get("completed_at"),
                 job_id
@@ -97,7 +102,7 @@ class SQLiteStorage(JobStorage):
                 data.get("status"),
                 data.get("progress", 0),
                 data.get("message"),
-                data.get("result"),
+                result_value,
                 data.get("created_at", time.time()),
                 time.time(),
                 data.get("completed_at")
@@ -120,8 +125,17 @@ class SQLiteStorage(JobStorage):
             "job_id", "user_id", "task_type", "status", "progress",
             "message", "result", "created_at", "updated_at", "completed_at"
         ]
-        return dict(zip(columns, row))
-    
+        data = dict(zip(columns, row))
+
+        # Deserialize result from JSON string
+        if data.get("result") is not None:
+            try:
+                data["result"] = json.loads(data["result"])
+            except (json.JSONDecodeError, TypeError):
+                pass  # Keep as string if not valid JSON
+
+        return data
+
     def delete(self, job_id: str):
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
