@@ -7,6 +7,7 @@ botforge-plugin/
 ├── <plugin-name>/
 │   ├── __init__.py      # Plugin init + metadata
 │   ├── plugin.py        # Main plugin class
+│   ├── mcp_server.py    # MCP server สำหรับ AI agent
 │   ├── README.md        # Plugin documentation
 │   └── ...
 ```

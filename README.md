@@ -125,8 +125,43 @@ task_queue = TaskQueuePlugin(
 | `get_status(job_id)` | เช็คสถานะงาน |
 | `get_result(job_id)` | ดึงผลลัพธ์ |
 | `cancel(job_id)` | ยกเลิกงาน |
-| `update_progress(percent, message)` | อัปเดตความคืบหน้า |
+| `update_progress(job_id, percent, message)` | อัปเดตความคืบหน้า |
+| `get_user_jobs(user_id, limit)` | ดึงรายการงานของ user |
 | `register(task_type)` | Register task handler |
+
+## MCP Server (AI Agent Integration)
+
+รองรับ MCP Protocol ผ่าน **stdio transport** ให้ AI agent เรียกใช้ task queue ได้โดยตรง
+
+### รัน MCP Server
+
+```bash
+python mcp_server.py
+```
+
+### ตั้งค่าฝั่ง AI Agent
+
+```json
+{
+  "mcpServers": {
+    "task-queue": {
+      "command": "python",
+      "args": ["mcp_server.py"],
+      "cwd": "/path/to/botforge-task-queue"
+    }
+  }
+}
+```
+
+### MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `task_queue_submit` | ส่งงานใหม่เข้าคิว |
+| `task_queue_status` | ตรวจสอบสถานะงาน |
+| `task_queue_result` | ดึงผลลัพธ์ของงาน |
+| `task_queue_cancel` | ยกเลิกงาน |
+| `task_queue_user_jobs` | ดึงรายการงานทั้งหมดของผู้ใช้ |
 
 ## License
 
